@@ -1,0 +1,93 @@
+% McNabb's PsuedoCode Template
+% Date:12/03/2018
+
+%--------------PREAMBLE-------------------------------------------------------
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\newcommand{\IfEnd}{\EndIf \State{\textbf{endIf}}}
+\newcommand{\ForEnd}[1]{\EndFor \State{\textbf{endFor (#1)}}}
+\newcommand{\WhileEnd}{\EndWhile \State{\textbf{endWhile}}}
+
+%-----------------------------------------------------------------------------
+
+\begin{algorithm}[h]
+\footnotesize
+\caption{- Are polygons neighbors?}
+\emph{Input--}\\
+$p_{1}: \text{polygon one}$\\
+$p_{2}: \text{polygon two}$
+
+\begin{algorithmic}[1]
+\Procedure{isNeighbor($p_{1},~p_{2})$}{}
+\If {isOverlapping( p1.boundingBox(),\\ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~p2.boundingBox() )}
+\State{\textbf{return} commonVertices($ p_{1}, p_{2}$)}
+\IfEnd
+\State {\textbf{return} \textsc{false}}
+\EndProcedure
+\end{algorithmic}
+\emph{Local Variables--}\\
+$counter:$ number of matching vertices\\
+$MIN = 2:$ minimum number of matching vertices required to be neighbors 
+\begin{algorithmic}[1]
+\Procedure{ commonVertices($ p_{1}, p_{2}$) }{}
+\State{counter = 0}
+\For {i = 0;~i $< p_{1}$.length();~i++}
+\If {$p_2$.intersects($p_1[i]$)}%commonVertex($p_{1}[i]$, $p_{2}$)}
+\State{counter++}
+\If{counter $\geq MIN$}
+\State{\textbf{return} \textsc{true}}
+\IfEnd
+\IfEnd
+\ForEnd{i}
+\State{\textbf{return} \textsc{false}}
+
+\EndProcedure
+\end{algorithmic} \label{alg:isneighbor}
+
+~\\
+\textbf{Desc: }\emph{Compares two polygons and tests for overlapping boundaries,\\ $p_1 \cap p_2$. Returns true if the minimum number of common vertices are found. }
+\end{algorithm}
+
+
+%-----------------------------------------------------------------------------------------------------------------------
+
+\begin{algorithm}[h]
+\footnotesize
+\caption{Contiguous Regions}
+\emph{Input--} $L_{p}: \text{non-empty list of polygons}$\\
+\emph{Output--} $L_{islands}: \text{list of contiguous islands (or land masses)}$\\
+\emph{Local Variables--}\\
+\textit{island}: current island\\
+\textit{neighborFound}: flag designating if neighbor is part of existing island
+
+\begin{algorithmic}[1]
+\Procedure{identifyContiguousRegions($L_{p}$)}{}
+\State{\textit{// For each polygon}}
+\While {!$L_p$.isEmpty()} 
+\State{\textit{// Assume Island}}
+\State{\textit{island} = $L_p$.popFirst()}
+\State{\textit{// For each island}}
+\For {i = 0; j $< L_{islands}$.length();~i++}
+\State{\textit{// For each polygon on each island}}
+\For {j = 0; j $< L_{islands}$[i].length(); j++}
+\If {$ isNeighbor(island,L_{islands}[i][j])$}
+\State{\textit{neighborFound} = true}
+\State{\textbf{break}}
+\IfEnd
+\ForEnd{j}
+\If{\textit{neighborFound}}
+\State{island.appendList($L_{islands}$[i])}
+\State{$L_{islands}$.removeIslandAt(i)}
+\State{i- -}
+\IfEnd
+\ForEnd{i}
+\State{$L_{islands}$.append(island)}
+\WhileEnd
+\State{\textbf{return $L_{islands}$}}
+\EndProcedure
+\end{algorithmic} \label{alg:contiguous}
+
+~\\
+\textbf{Desc: }\emph{Partitions a list of non-contiguous polygons into separate contiguous regions such as islands and land masses. A contiguous region has connected neighbors where no area is completely separated by water. }
+\end{algorithm}
